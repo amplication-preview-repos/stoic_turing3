@@ -1,0 +1,38 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model PdfFile {
+  createdAt  DateTime    @default(now())
+  filePath   String?
+  id         String      @id @default(cuid())
+  ocrResults OcrResult[]
+  updatedAt  DateTime    @updatedAt
+  uploadTime DateTime?
+}
+
+model OcrResult {
+  createdAt      DateTime      @default(now())
+  extractionTime DateTime?
+  id             String        @id @default(cuid())
+  pdfFile        PdfFile?      @relation(fields: [pdfFileId], references: [id])
+  pdfFileId      String?
+  text           String?
+  translations   Translation[]
+  updatedAt      DateTime      @updatedAt
+}
+
+model Translation {
+  createdAt       DateTime   @default(now())
+  id              String     @id @default(cuid())
+  ocrResult       OcrResult? @relation(fields: [ocrResultId], references: [id])
+  ocrResultId     String?
+  translatedText  String?
+  translationTime DateTime?
+  updatedAt       DateTime   @updatedAt
+}
